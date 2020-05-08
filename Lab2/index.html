@@ -1,0 +1,56 @@
+<html>
+<head>
+	<title>Wow</title>
+    <meta charset="utf-8">
+</head>
+
+<script>
+ document.addEventListener('mouseover', () =>
+        {     
+            if (!event.target.matches('.link')) return;     
+            event.preventDefault(); 
+			let url = new URL('http://localhost:8888/');
+			
+			let xhr = new XMLHttpRequest();
+
+			xhr.open('POST', url);
+
+			xhr.send(document.getElementById("textbox").value);
+
+			xhr.onerror = function() {
+				alert(`Ошибка соединения`);
+			};
+			
+			xhr.onload = function() {
+				var resp = JSON.parse(xhr.response).numberofcharacters;
+				console.log(xhr.response);
+				alert(resp);
+			};
+        });
+
+</script>
+
+<body>
+Лабораторная работа 2. Разработка клиентского веб-приложения<br /><br />
+Подсчет знаков препинания (. , ! ? : ; -) <br />
+
+<p><input id="textbox" type="text" maxlength="1000" size="72" /></p>
+
+<a onmouseover = 
+"javascript:
+var textbox_value = textbox.value;
+var ct = 0;
+
+for (var i = 0; i &lt; textbox_value.length; i++)
+{
+	if ('.,!?:;-'.indexOf(textbox_value[i]) !== -1)  {ct++};
+}
+
+ct == 0 ? alert('NO'): alert(ct);">Подсчитать на стороне клиента</a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a class="link" id="2">Подсчитать на стороне сервера</a>
+
+</body>
+</html>

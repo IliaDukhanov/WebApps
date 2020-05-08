@@ -1,0 +1,45 @@
+<html>
+<head>
+	<title>Wow</title>
+    <meta charset="utf-8">
+</head>
+
+<script>
+ document.addEventListener('mouseover', () =>
+        {     
+            if (!event.target.matches('.link')) return;     
+            event.preventDefault(); 
+			let url = new URL('http://localhost:8888/');
+			
+			let xhr = new XMLHttpRequest();
+            url.searchParams.set('a', document.getElementById("textbox1").value);
+            url.searchParams.set('b', document.getElementById("textbox2").value);
+
+			xhr.open('GET', url);
+			xhr.send();
+
+			xhr.onerror = function() {
+				alert(`Ошибка соединения`);
+			};
+			
+			xhr.onload = function() {
+				var resp = JSON.parse(xhr.response).ServResponse;
+				alert(resp);
+			};
+        });
+
+</script>
+
+<body>
+Лабораторная работа 3. Формирование собственных модулей и
+реализация обработки GET-запросов<br /><br />
+
+Умножение параметра а на параметр b<br />
+
+<p>Параметр а: <input id="textbox1" type="text" maxlength="1000" size="72" /></p>
+<p>Параметр b: <input id="textbox2" type="text" maxlength="1000" size="72" /></p>
+
+<a class="link" id="2">Подсчитать</a>
+
+</body>
+</html>
