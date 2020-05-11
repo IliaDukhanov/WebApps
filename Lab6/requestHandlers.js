@@ -16,28 +16,13 @@ function favicon(response) {
     response.end();
 }
 
-function beaver(response, idPic)
-{
-    response.write(fs.readFileSync('images/beaver/'+idPic+'.jpg'));
-}
-
-function bison(response, idPic)
-{
-    response.write(fs.readFileSync('images/bison/'+idPic+'.jpg'));
-}
-
-function hippo(response, idPic)
-{
-    response.write(fs.readFileSync('images/hippo/'+idPic+'.jpg'));
-}
-
 function formatError(response)
 {
     response.write(JSON.stringify({error: "Неверный формат запроса"}));
     response.end();
 }
 
-function byContent(response, postData)
+function search(response, postData)
 {
     var images = {
         WhiteBeaverS: {animal: "beaver", colour: "white", grouping: "single", url: "images/WhiteBeaverS.jpg"},
@@ -65,7 +50,7 @@ function byContent(response, postData)
         return;
     }
 
-    if(JSON.parse(postData).colour === ''){
+    if(properties.colour === ''){
         var id = Math.floor(Math.random() * Math.floor(3));
         switch (id) {
             case 0:
@@ -82,7 +67,7 @@ function byContent(response, postData)
           }
     }
 
-    if(JSON.parse(postData).grouping === ''){
+    if(properties.grouping === ''){
         var id = Math.floor(Math.random() * Math.floor(2));
         switch (id) {
             case 0:
@@ -96,61 +81,43 @@ function byContent(response, postData)
           }
     }
 
+    if(!properties.width){
+        properties.width = 0;
+        while(properties.width === 0)
+            properties.width = Math.floor(Math.random() * Math.floor(6)) * 100;
+    }
+
+    if(!properties.height){
+        properties.height = 0;
+        while(properties.height === 0)
+            properties.height = Math.floor(Math.random() * Math.floor(6)) * 100;
+    }
+
     console.log(properties);
+
     for (var image in images){
         if(properties.animal === images[image].animal &&
            properties.colour === images[image].colour &&
            properties.grouping === images[image].grouping){
-                response.writeHead(200);
-                console.log(JSON.parse(postData));
-                response.write(JSON.stringify({ animal: properties.animal, colour: properties.colour, grouping: properties.grouping, imgURL: images[image].url}));
-                response.end();
+                properties.filename = images[image].url.slice(7);
+                properties.imgURL = images[image].url;
+                byImage(response, properties);
                 return;
-            }
+        }
     }
-    response.write(JSON.stringify({ animal: properties.animal, colour: properties.colour, grouping: properties.grouping, error: "Изображение не найдено"}));
-    response.end();
+    properties.error = "Изображение не найдено";
+
+    byImage(response, properties);
 }
 
-function byImage(response, postData)
+function byImage(response, properties)
 {
-    var images = {
-        WhiteBeaverS: {filename: "WhiteBeaverS.jpg", width: 1280, height: 720},
-        WhiteBeaverM: {filename: "WhiteBeaverM.jpg", width: 800, height: 533},
-        BlackBeaverS: {filename: "BlackBeaverS.jpg", width: 800, height: 532},
-        BlackBeaverM: {filename: "BlackBeaverM.jpg", width: 1952, height: 1281},
-        PurpleBeaverS: {filename: "PurpleBeaverS.jpg", width: 900, height: 900},
-        WhiteBisonS: {filename: "WhiteBisonS.jpg", width: 1600, height: 1599},
-        BlackBisonS: {filename: "BlackBisonS.jpg", width: 3888, height: 2592},
-        BlackBisonM: {filename: "BlackBisonM.jpg", width: 1140, height: 712},
-        PurpleBisonS: {filename: "PurpleBisonS.jpg", width: 508, height: 495},
-        PurpleBisonM: {filename: "PurpleBisonM.jpg", width: 533, height: 800},
-        WhiteHippoS: {filename: "WhiteHippoS.jpg", width: 736, height: 736},
-        WhiteHippoM: {filename: "WhiteHippoM.jpg", width: 2433, height: 1414},
-        BlackHippoS: {filename: "BlackHippoS.jpg", width: 2000, height: 1648},
-        BlackHippoM: {filename: "BlackHippoM.jpg", width: 1200, height: 675},
-        PurpleHippoS: {filename: "PurpleHippoS.jpg", width: 800, height: 800},
-        PurpleHippoM: {filename: "PurpleHippoM.jpg", width: 238, height: 250}
-    }
-
-    var properties = JSON.parse(postData);
-
-    for (var image in images){
-        if(properties.filename === images[image].filename &&
-           properties.width === images[image].width &&
-           properties.height === images[image].height){
-                response.writeHead(200);
-                console.log(JSON.parse(postData));
-                response.write(JSON.stringify({ filename: properties.filename, width: properties.width, height: properties.height, imgURL: "images/" + properties.filename}));
-                response.end();
-                return;
-            }
-    }
-    response.write(JSON.stringify({ animal: properties.animal, colour: properties.colour, grouping: properties.grouping, error: "Изображение не найдено"}));
-    response.end();
+        response.writeHead(200);
+        response.write(JSON.stringify(properties));
+        response.end();
 }
 
 exports.start = start;
 exports.favicon = favicon;
-exports.byContent = byContent;
+exports.search = search;
 exports.byImage = byImage;

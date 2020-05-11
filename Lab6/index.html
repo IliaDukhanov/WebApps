@@ -9,7 +9,7 @@
             {     
                     if (!event.target.matches('.sndCnt')) return;     
                     event.preventDefault(); 
-                    let url = new URL('http://localhost:8888/byContent');
+                    let url = new URL('http://localhost:8888/search');
                     
                     let xhr = new XMLHttpRequest();
                     
@@ -20,50 +20,9 @@
                         animal: document.getElementById("animal").value,
                         colour: document.getElementById("colour").value,
                         grouping: document.getElementsByName("grouping")[0].checked ?
-                                    document.getElementsByName("grouping")[0].value :
-                                    document.getElementsByName("grouping")[1].checked ?
-                                    document.getElementsByName("grouping")[1].value :
-                                    ""
-                    });
-                    xhr.send(message);
-
-                    xhr.onerror = function() {
-                        alert('Ошибка соединения');
-                    };
-
-                    xhr.onload = function() {
-                        var animal = JSON.parse(xhr.response).animal;
-                        var colour = JSON.parse(xhr.response).colour;
-                        var grouping = JSON.parse(xhr.response).grouping;
-                        console.log(xhr.response);
-                        if(!JSON.parse(xhr.response).error){
-                            document.getElementById("resp").innerHTML = "<strong>Ответ на запрос:</strong><br /><br />" +
-                                                                        "Название животного: <strong>" + animal + "</strong><br />" +
-                                                                        "Цвет: <strong>" + colour + "</strong><br />" +
-                                                                        "Количество животных: <strong>" + grouping + "</strong><br />";
-                            document.getElementById("myimage").innerHTML = '<img src="' + JSON.parse(xhr.response).imgURL + '" alt="" width="400">';
-                        }
-                        else{
-                            document.getElementById("resp").innerHTML = "<strong>" + JSON.parse(xhr.response).error + "</strong>";
-                            document.getElementById("myimage").innerHTML = "";
-                        }
-                    };
-            });
-    </script>
-
-    <script>
-        document.addEventListener('click', () =>
-            {     
-                    if (!event.target.matches('.sndImg')) return;     
-                    event.preventDefault(); 
-                    let url = new URL('http://localhost:8888/byImage');
-                    
-                    let xhr = new XMLHttpRequest();
-                    
-                    xhr.open('POST', url);
-
-                    var message = JSON.stringify({
-                        filename: document.getElementById("filename").value,
+                                  document.getElementsByName("grouping")[0].value :
+                                  document.getElementsByName("grouping")[1].checked ?
+                                  document.getElementsByName("grouping")[1].value : "",
                         width: parseInt(document.getElementById("width").value),
                         height: parseInt(document.getElementById("height").value)
                     });
@@ -74,19 +33,21 @@
                     };
 
                     xhr.onload = function() {
-                        var filename = JSON.parse(xhr.response).filename;
-                        var width = JSON.parse(xhr.response).width;
-                        var height = JSON.parse(xhr.response).height;
-                        console.log(xhr.response);
-                        if(!JSON.parse(xhr.response).error){
+                        var properties = JSON.parse(xhr.response);
+
+                        console.log(properties);
+                        if(!properties.error){
                             document.getElementById("resp").innerHTML = "<strong>Ответ на запрос:</strong><br /><br />" +
-                                                                        "Название файла: <strong>" + filename + "</strong><br />" +
-                                                                        "Ширина изображения: <strong>" + width + "</strong><br />" +
-                                                                        "Высота изображения: <strong>" + height + "</strong><br />";
-                            document.getElementById("myimage").innerHTML = '<img src="' + JSON.parse(xhr.response).imgURL + '" alt="" width="400">';
+                                                                        "Название животного: <strong>" + properties.animal + "</strong><br />" +
+                                                                        "Цвет: <strong>" + properties.colour + "</strong><br />" +
+                                                                        "Количество животных: <strong>" + properties.grouping + "</strong><br />" +
+                                                                        "Имя файла: <strong>" + properties.filename + "</strong><br />" +
+                                                                        "Ширина: <strong>" + properties.width + "</strong><br />" +
+                                                                        "Высота: <strong>" + properties.height + "</strong><br />";
+                            document.getElementById("myimage").innerHTML = '<img src="' + properties.imgURL + '" alt="" width="' + properties.width + '"height="' + properties.height + '">';
                         }
                         else{
-                            document.getElementById("resp").innerHTML = "<strong>" + JSON.parse(xhr.response).error + "</strong>";
+                            document.getElementById("resp").innerHTML = "<strong>" + properties.error + "</strong>";
                             document.getElementById("myimage").innerHTML = "";
                         }
                     };
@@ -97,19 +58,14 @@
         Лабораторная работа 6. Реализация REST API
         <br /><br />
         <strong>Поиск по содержимому изображения</strong><br /><br />
-        <form action="/byContent" method="post">
+        <form action="/search" method="post">
             Название животного: <input type="text" id="animal" name="UI" type="text" placeholder="" size="40"></input><br /><br />
             Цвет*: <input type="text" id="colour" name="UI" type="text" placeholder="" size="40"></input><br /><br />
             <input name="grouping" type="radio" value="single"> Одиночное животное*
             <input name="grouping" type="radio" value="multiple"> Группа животных*<br /><br />
+            Ширина изображения*: <input type="text" id="width" name="UI" type="text" placeholder="" size="10"></input><br /><br />
+            Высота изображения*: <input type="text" id="height" name="UI" type="text" placeholder="" size="10"></input><br /><br />
             <input class = "sndCnt" type="submit" value="Submit" />
-        </form>
-        <strong>Поиск по параметрам изображения</strong><br /><br />
-        <form action="/byImage" method="post">
-            Имя изображения: <input type="text" id="filename" name="UI" type="text" placeholder="" size="40"></input><br /><br />
-            Ширина изображения: <input type="text" id="width" name="UI" type="text" placeholder="" size="10"></input><br /><br />
-            Высота изображения: <input type="text" id="height" name="UI" type="text" placeholder="" size="10"></input><br /><br />
-            <input class = "sndImg" type="submit" value="Submit" />
         </form>
         <a id = 'resp'></a>
         <div id="myimage"></div>

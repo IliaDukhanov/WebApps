@@ -6,8 +6,7 @@ var handle = {}
 handle["/"] = requestHandlers.start;
 handle["/start"] = requestHandlers.start;
 handle["/favicon.ico"] = requestHandlers.favicon;
-handle["/byContent"] = requestHandlers.byContent;
-handle["/byImage"] = requestHandlers.byImage;
+handle["/search"] = requestHandlers.search;
 
 
 server.start(router.route, handle);
