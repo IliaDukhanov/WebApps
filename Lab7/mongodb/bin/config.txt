@@ -1,0 +1,2 @@
+##store data
+dbpath=..\data\db
